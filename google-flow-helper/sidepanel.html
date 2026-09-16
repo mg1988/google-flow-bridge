@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    :root {
+      --primary: #1a73e8;
+      --primary-dark: #1765cc;
+      --bg: #ffffff;
+      --border: #dadce0;
+      --text: #202124;
+      --muted: #5f6368;
+      --success: #188038;
+      --error: #d93025;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      width: 100%;
+      min-width: 320px;
+      max-width: 480px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      padding: 16px;
+    }
+    .header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .header img { width: 28px; height: 28px; border-radius: 8px; }
+    .header h1 { font-size: 16px; font-weight: 600; }
+    .header .sub { font-size: 11px; color: var(--muted); }
+    label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; }
+    textarea {
+      width: 100%;
+      height: 96px;
+      resize: vertical;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 13px;
+      line-height: 1.5;
+      outline: none;
+      font-family: inherit;
+    }
+    textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.15); }
+    .row { display: flex; gap: 8px; margin-top: 12px; }
+    .seg { flex: 1; }
+    .seg input { display: none; }
+    .seg span {
+      display: block;
+      text-align: center;
+      padding: 9px 0;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 13px;
+      cursor: pointer;
+      color: var(--muted);
+      transition: all .15s;
+      user-select: none;
+    }
+    .seg input:checked + span {
+      border-color: var(--primary);
+      background: rgba(26, 115, 232, 0.08);
+      color: var(--primary);
+      font-weight: 600;
+    }
+    #generateBtn {
+      width: 100%;
+      margin-top: 12px;
+      padding: 11px 0;
+      border: none;
+      border-radius: 8px;
+      background: var(--primary);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .15s;
+    }
+    #generateBtn:hover { background: var(--primary-dark); }
+    #generateBtn:disabled { background: #a8c7fa; cursor: not-allowed; }
+    #status {
+      margin-top: 12px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.6;
+      min-height: 18px;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    #status.error { color: var(--error); }
+    #status.success { color: var(--success); }
+    .results { margin-top: 14px; }
+    .results h2 { font-size: 12px; color: var(--muted); font-weight: 500; margin-bottom: 8px; }
+    .result-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 8px;
+      font-size: 12px;
+    }
+    .result-item .type-badge {
+      flex-shrink: 0;
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+    .type-badge.image { background: #e8f0fe; color: var(--primary); }
+    .type-badge.video { background: #fce8e6; color: var(--error); }
+    .result-item .meta { flex: 1; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .result-item a { color: var(--primary); text-decoration: none; font-weight: 500; }
+    .result-item a:hover { text-decoration: underline; }
+    .empty { font-size: 12px; color: #9aa0a6; text-align: center; padding: 10px 0; }
+    .foot { margin-top: 12px; font-size: 11px; color: #9aa0a6; text-align: center; }
+    .foot a { color: var(--muted); }
+    .bridge {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .bridge .dot { width: 8px; height: 8px; border-radius: 50%; background: #9aa0a6; display: inline-block; }
+    .bridge.connected .dot { background: #188038; }
+    .bridge.error .dot { background: var(--error); }
+    .bridge-detail { font-size: 10px; color: #9aa0a6; margin-top: 2px; line-height: 1.5; word-break: break-all; }
+    #reconnectBtn {
+      margin-left: auto;
+      font-size: 10px;
+      padding: 3px 8px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: #fff;
+      color: var(--primary);
+      cursor: pointer;
+    }
+    #reconnectBtn:hover { background: #f1f6fe; }
+    #reconnectBtn:disabled { color: #9aa0a6; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <img src="icons/icon48.png" alt="" />
+    <div>
+      <h1>Google Flow 助手</h1>
+      <div class="sub">豆包 · 一键生成图片 / 视频</div>
+    </div>
+  </div>
+  <div class="bridge" id="bridgeStatus"><span class="dot"></span><span>本地 Agent：<span id="bridgeState">检测中…</span></span><button id="reconnectBtn">重连</button></div>
+  <div class="bridge-detail" id="bridgeDetail"></div>
+
+  <label for="prompt">提示词（描述你想生成的内容）</label>
+  <textarea id="prompt" placeholder="例如：清晨金色光里，老渔夫在河口撒网，暖侧光，缓慢推近，35mm 胶片颗粒感"></textarea>
+
+  <div class="row">
+    <label class="seg"><input type="radio" name="type" value="image" checked /><span>🖼 图片</span></label>
+    <label class="seg"><input type="radio" name="type" value="video" /><span>🎬 视频</span></label>
+  </div>
+
+  <button id="generateBtn">生成</button>
+
+  <div id="status"></div>
+
+  <div class="results">
+    <h2>最近生成结果</h2>
+    <div id="resultList"><div class="empty">暂无结果，生成后会自动出现在这里</div></div>
+  </div>
+
+  <div class="foot">
+    <a href="options.html" target="_blank">高级设置（选择器/模式）</a> ·
+    <a href="https://labs.google/fx/tools/flow" target="_blank">打开 Flow</a>
+  </div>
+
+  <script src="sidepanel.js"></script>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>Google Flow 助手 · 设置</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: #f8f9fa;
+      color: #202124;
+      padding: 40px 20px;
+    }
+    .card {
+      max-width: 640px;
+      margin: 0 auto 16px;
+      background: #fff;
+      border: 1px solid #dadce0;
+      border-radius: 12px;
+      padding: 24px;
+    }
+    h1 { font-size: 18px; margin-bottom: 4px; }
+    .sub { font-size: 12px; color: #5f6368; margin-bottom: 20px; }
+    h2 { font-size: 14px; margin: 18px 0 8px; }
+    label { display: block; font-size: 13px; margin: 12px 0 6px; }
+    input[type="text"], textarea, select {
+      width: 100%;
+      border: 1px solid #dadce0;
+      border-radius: 8px;
+      padding: 9px 12px;
+      font-size: 13px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      outline: none;
+    }
+    input:focus, textarea:focus, select:focus { border-color: #1a73e8; }
+    textarea { min-height: 60px; resize: vertical; }
+    .hint { font-size: 12px; color: #5f6368; margin-top: 4px; line-height: 1.5; }
+    .row { display: flex; gap: 12px; align-items: center; }
+    .row > * { flex: 1; }
+    .seg { display: flex; border: 1px solid #dadce0; border-radius: 8px; overflow: hidden; }
+    .seg label { margin: 0; flex: 1; }
+    .seg input { display: none; }
+    .seg span { display: block; text-align: center; padding: 9px 0; font-size: 13px; cursor: pointer; color: #5f6368; }
+    .seg input:checked + span { background: #e8f0fe; color: #1a73e8; font-weight: 600; }
+    button {
+      margin-top: 20px;
+      padding: 11px 28px;
+      border: none;
+      border-radius: 8px;
+      background: #1a73e8;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button:hover { background: #1765cc; }
+    #saveMsg { font-size: 13px; color: #188038; margin-left: 12px; }
+    .danger { color: #d93025; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Google Flow 助手设置</h1>
+    <div class="sub">选择器与行为配置。页面结构变化时，在这里微调即可。</div>
+
+    <h2>运行模式</h2>
+    <div class="seg">
+      <label><input type="radio" name="mode" value="auto" /><span>自动模式</span></label>
+      <label><input type="radio" name="mode" value="semi" /><span>半自动模式</span></label>
+    </div>
+    <div class="hint">自动模式：自动填提示词 + 点击生成 + 自动下载。<br/>半自动模式：只自动填提示词，生成按钮由你手动点（防止误触），结果仍自动获取。</div>
+
+    <h2>输入框选择器（可选，留空则自动识别）</h2>
+    <label for="promptSelectors">CSS 选择器（多个用英文逗号分隔）</label>
+    <textarea id="promptSelectors" placeholder="例如：[data-testid=&quot;prompt-input&quot;], textarea[aria-label*=&quot;Describe&quot;]"></textarea>
+
+    <h2>生成按钮选择器（可选）</h2>
+    <label for="generateButtonSelectors">CSS 选择器（多个用英文逗号分隔）</label>
+    <textarea id="generateButtonSelectors" placeholder="例如：button[aria-label=&quot;Generate&quot;]"></textarea>
+
+    <h2>参数</h2>
+    <div class="row">
+      <div>
+        <label for="resultScanIntervalMs">结果扫描间隔（毫秒）</label>
+        <input type="text" id="resultScanIntervalMs" />
+      </div>
+      <div>
+        <label for="imageMinSize">图片最小边长（px，过滤图标）</label>
+        <input type="text" id="imageMinSize" />
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label for="imageTimeoutMs">图片等待超时（毫秒）</label>
+        <input type="text" id="imageTimeoutMs" />
+      </div>
+      <div>
+        <label for="videoTimeoutMs">视频等待超时（毫秒）</label>
+        <input type="text" id="videoTimeoutMs" />
+      </div>
+    </div>
+
+    <button id="saveBtn">保存设置</button><span id="saveMsg"></span>
+
+    <h2 class="danger">提示</h2>
+    <div class="hint">
+      1. 首次使用请先在 <a href="https://labs.google/fx/tools/flow" target="_blank">labs.google/fx/tools/flow</a> 登录 Google 账号。<br/>
+      2. 若自动点击生成按钮定位不准，改用半自动模式，生成按钮由你手动点击，结果照常自动获取下载。<br/>
+      3. 未配置本地下载目录时，自动下载会保存到浏览器默认下载目录。
+    </div>
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>
